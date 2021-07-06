@@ -1,2 +1,21 @@
 NAME
 	apsh — advanced piping shell
+
+DESCRIPTION
+	apsh is a shell designed to give the user the ability
+	to create advanced pipelines. To this end, all forks
+	apsh makes of itself share exported and unexported
+	variables, with the exception of when the ( ) syntax
+	is used to fork the shell, in which case they are
+	inherited but unshared.
+
+	apsh has support for <( ) and >( ), as well as <>( )
+	which creates a socket instead of a pipe and connects
+	both ends. Similarly <>| is like |, except it creates
+	a bidirectional socket instead of a pipe. apsh also
+	lets the user create pipes and sockets before then
+	are used.
+
+	Additionally if ( ) or (( )) is used as an argument
+	in to a command, the code is formatted and parsed
+	the as a string to the command as that argument.
