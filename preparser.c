@@ -5,7 +5,7 @@
 size_t
 parse(struct parser_context *ctx, char *code, size_t code_len, size_t *nremovedp)
 {
-	int end_of_file_reached;
+	char end_of_file_reached;
 	size_t bytes_parsed = 0;
 
 	end_of_file_reached = ctx->end_of_file_reached;

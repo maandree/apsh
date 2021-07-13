@@ -4,18 +4,38 @@
 USAGE("");
 
 
+int login_shell;
+int posix_mode;
+
+
 void
-initialise_parser_context(struct parser_context *ctx)
+initialise_parser_context(struct parser_context *ctx, int need_tokeniser, int need_parser)
 {
 	memset(ctx, 0, sizeof(*ctx));
-	ctx->preparser_line_number = 1;
-	ctx->tokeniser_line_number = 1;
-	ctx->mode_stack = ecalloc(1, sizeof(*ctx->mode_stack));
-	ctx->mode_stack->mode = NORMAL_MODE;
-	ctx->mode_stack->she_is_comment = 1;
-	ctx->parser_state = ecalloc(1, sizeof(*ctx->parser_state));
-	ctx->here_documents_next = &ctx->here_documents_first;
+	if (need_tokeniser) {
+		ctx->preparser_line_number = 1;
+		ctx->tokeniser_line_number = 1;
+		ctx->mode_stack = ecalloc(1, sizeof(*ctx->mode_stack));
+		ctx->mode_stack->she_is_comment = 1;
+		ctx->here_document_stack = ecalloc(1, sizeof(*ctx->here_document_stack));
+		ctx->here_document_stack->next = &ctx->here_document_stack->first;
+	}
+	if (need_parser) {
+		ctx->parser_state = ecalloc(1, sizeof(*ctx->parser_state));
+	}
+	ctx->interpreter_state = ecalloc(1, sizeof(*ctx->interpreter_state));
 }
+
+
+static int
+is_sh(char *name)
+{
+	if (!strcmp(name, "sh"))
+		return 1;
+	name = strrchr(name, '/');
+	return name && !strcmp(name, "/sh");
+}
+
 
 int
 main(int argc, char *argv[])
@@ -36,8 +56,11 @@ main(int argc, char *argv[])
 	if (argc)
 		usage();
 
-	initialise_parser_context(&ctx);
-	ctx.tty_input = isatty(STDIN_FILENO);
+	login_shell = (argv0[0] == '-');
+	posix_mode = is_sh(&argv0[login_shell]);
+
+	initialise_parser_context(&ctx, 1, 1);
+	ctx.tty_input = (char)isatty(STDIN_FILENO);
 	if (ctx.tty_input)
 		weprintf("apsh is currently not implemented to be interactive\n");
 
@@ -71,6 +94,12 @@ main(int argc, char *argv[])
 	if (buffer_tail != buffer_head || ctx.premature_end_of_file)
 		eprintf("premature end of file reached\n");
 
+	free(ctx.parser_state->commands);
+	free(ctx.parser_state->arguments);
+	free(ctx.parser_state->redirections);
+	free(ctx.parser_state);
+	free(ctx.here_document_stack);
+	free(ctx.interpreter_state);
 	free(buffer);
 	return 0;
 }

@@ -7,7 +7,10 @@ OBJ =\
 	apsh.o\
 	preparser.o\
 	tokeniser.o\
-	parser.o
+	parser.o\
+	interpreter.o\
+	special_builtins.o\
+	regular_builtins.o
 
 HDR =\
 	common.h\
