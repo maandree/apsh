@@ -520,7 +520,7 @@ push_variable_substitution_argument(struct parser_context *ctx, struct command *
 				}
 
 			} else if (ctx->interpreter_state->requirement == NEED_INDEX_OR_OPERATOR_OR_END) {
-				if (s[0] == '[') {
+				if (s[0] == '[' && check_extension("[", line_number)) {
 					ctx->interpreter_state->requirement = NEED_OPERATOR_OR_END;
 				index:
 					/* TODO push INDEX substate that exits on ] */
@@ -556,7 +556,7 @@ push_variable_substitution_argument(struct parser_context *ctx, struct command *
 
 			} else if (ctx->interpreter_state->requirement == NEED_INDEX_OR_SUFFIX_OR_END) {
 				ctx->interpreter_state->requirement = NEED_END;
-				if (s[0] == '[') {
+				if (s[0] == '[') { /* Do not check if extensions are allowed, cannot reach this code otherwise */
 					goto index;
 				} else if (s[0] == '*' || s[0] == '@') {
 					push_operator(ctx, argument, s, 1);
