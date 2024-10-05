@@ -13,7 +13,7 @@ DESCRIPTION
 	which creates a socket instead of a pipe and connects
 	both ends. Similarly <>| is like |, except it creates
 	a bidirectional socket instead of a pipe. apsh also
-	lets the user create pipes and sockets before then
+	lets the user create pipes and sockets before they
 	are used.
 
 	Additionally if ( ) or (( )) is used as an argument
